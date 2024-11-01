@@ -1,0 +1,113 @@
+#  vim:ts=2:sts=2:sw=2:et
+#
+#  Author: Nho Luong
+#  Date: 2015-05-31 19:20:44 +0100 (Sun, 31 May 2015)
+#
+#  https://github.com/nholuongut/lib-java
+#
+#  License: see accompanying Nho Luong LICENSE file
+#
+#  If you're using my code you're welcome to connect with me on LinkedIn and optionally send me feedback
+#  to help improve or steer this or other code I publish
+#
+#  https://www.linkedin.com/in/nholuong
+#
+
+# ============================================================================ #
+#                               T r a v i s   C I
+# ============================================================================ #
+
+# https://docs.travis-ci.com/user/customizing-the-build/
+
+---
+version: ~> 1.0
+
+# ===============================================
+# https://docs.travis-ci.com/user/languages/java/
+language: java
+
+# =============================================
+# https://docs.travis-ci.com/user/build-matrix/
+# https://docs.travis-ci.com/user/build-stages/matrix-expansion/
+matrix:
+  # doesn't provide oraclejdk6 any more because it's EOL as of Nov 2012
+
+  # SonarQube plugin version 2.2 is now built with Java 8, doesn't support Java 7
+  #- oraclejdk7
+  include:
+    # not available any more on Travis CI
+    #- jdk: oraclejdk8
+    # maven repo access broken in Travis CI
+    #- jdk: oraclejdk9
+    #  os: linux
+    - jdk: openjdk9
+      os: linux
+    - jdk: openjdk11
+      os: linux
+    # Java 8 not available on Mac OS X
+    #- jdk: openjdk9
+    #  os: osx
+    # gets buffer overflows for both Java Surefire and SBT
+    #- openjdk7
+    # not supported by either mvnw or gradlew
+    #- openjdk6
+
+# ======================================================
+# https://docs.travis-ci.com/user/environment-variables/
+#env:
+#  - DEBUG=1
+
+# ==============================================
+# https://docs.travis-ci.com/user/notifications/
+notifications:
+  email: false
+
+# =================================================================================
+# https://docs.travis-ci.com/user/customizing-the-build/#building-specific-branches
+# https://docs.travis-ci.com/user/conditional-builds-stages-jobs
+#branches:
+#  only:
+#    - master
+
+# ========================================
+# https://docs.travis-ci.com/user/caching/
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+
+cache:
+  - pip
+  - directories:
+      - $HOME/.cache
+      - $HOME/.cpan
+      - $HOME/.cpanm
+      - $HOME/.gem
+      - $HOME/.m2
+      - $HOME/.ivy
+      - $HOME/.ivy2
+      - $HOME/.gradle
+      - $HOME/.sbt
+      - bash-tools/pytools_checks
+
+# ==============================================
+# https://docs.travis-ci.com/user/job-lifecycle/
+
+# avoid package checksum mismatches when installing packages
+before_install:
+  - sudo rm -f "${TRAVIS_ROOT}/etc/apt/apt.conf.d/99-travis-apt-proxy"
+  - sudo rm -rf "${TRAVIS_ROOT}/var/lib/apt/lists/"*
+
+install:
+  #- make random-build
+  # SBT fails to download on Travis - rely on GitHub Actions individual builds instead
+  #- travis_retry make all
+  # just use the default Gradle build on Travis to work around the bug
+  - travis_retry make
+
+after_success:
+  # JaCoCo gives error, skip for now and just use Cobertura:
+  # [WARNING] Classes in bundle 'Utils' do no match with execution data. For report
+  # generation the same class files must be used as at runtime.
+  # [WARNING] Execution data for class nholuongut/Utils does not match.
+  #- mvn clean cobertura:cobertura jacoco:report coveralls:report
+  - mvn clean cobertura:cobertura coveralls:report

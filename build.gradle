@@ -1,0 +1,71 @@
+//
+//  Author: Nho Luong
+//  Date: 2016-07-24 09:40:20 +0100 (Sun, 24 Jul 2016)
+//
+//  vim:ts=4:sts=4:sw=4:et:filetype=groovy
+//
+//  https://github.com/nholuongut/lib-java
+//
+//  License: see accompanying Nho Luong LICENSE file
+//
+//  If you're using my code you're welcome to connect with me on LinkedIn and optionally send me feedback to help improve or steer this or other code I publish
+//
+//  https://www.linkedin.com/in/nholuong
+//
+
+plugins {
+    id "org.sonarqube" version "2.7"
+    id "org.standardout.versioneye" version "1.4.0"
+}
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.linkedin.nholuongut'
+version = '1.17.6'
+
+description = """nholuongut's JVM Utility Library"""
+
+//def target_java_version = '7'
+
+//sourceCompatibility = "1.$target_java_version"
+//targetCompatibility = "1.$target_java_version"
+
+//def java_home_env = "JAVA${target_java_version}_HOME"
+//def java_home = System.getenv("$java_home_env")
+//if(java_home){
+//    println "found \$$java_home_env = $java_home"
+//    println "will use this for bootstrap classpath for cross-compile"
+//    project.tasks.withType(AbstractCompile, { AbstractCompile ac ->
+//        ac.options.bootClasspath = "$java_home/jre/lib/rt.jar"
+//    })
+//} else if(System.getProperty('java.specification.version') != target_java_version){
+//    System.err.println("WARNING: couldn't find $java_home_env environment variable to set bootstrap classpath for cross compiling " +
+//                       "(may generate code that isn't actually compatible with the target version)")
+//}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+uploadArchives {
+    repositories {
+        ivy {
+            url "${System.properties['user.home']}/.ivy2/local"
+        }
+
+        /* won't follow .m2/settings.xml, use maven plugin's install task instead
+        mavenDeployer{
+            repository(url: "file://${System.properties['user.home']}/.m2/repository")
+        }
+        */
+    }
+}
+
+dependencies {
+    compile group: 'commons-cli', name: 'commons-cli', version:'1.4'
+    compile group: 'commons-lang', name: 'commons-lang', version:'2.6'
+    compile group: 'log4j', name: 'log4j', version:'1.2.17'
+    compile group: 'jline', name: 'jline', version:'2.14.5'
+    testCompile group: 'junit', name: 'junit', version:'4.12'
+}

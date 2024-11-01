@@ -1,0 +1,18 @@
+#  vim:ts=4:sts=4:sw=4:et
+#
+#  Author: Nho Luong
+#  Date: 2018-05-22 11:15:16 +0100 (Tue, 22 May 2018)
+#
+#  https://github.com/nholuongut/lib
+#
+#  License: see accompanying Nho Luong LICENSE file
+#
+#  https://www.linkedin.com/in/nholuong
+#
+
+# ============================================================================ #
+#                    Mac OS X - Homebrew Package Requirements
+# ============================================================================ #
+
+# provided by system
+#java
